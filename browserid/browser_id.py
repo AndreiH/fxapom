@@ -9,11 +9,6 @@ import selenium
 
 class BrowserID(object):
 
-    VERIFY_URL_REGEX = 'https?:\/\/(\S+)\/verify_email_address\?token=(.{48})'
-    CONFIRM_URL_REGEX = 'https?:\/\/(\S+)\/confirm\?token=(.{48})'
-    RESET_URL_REGEX = 'https?:\/\/(\S+)\/reset_password\?token=(.{48})'
-    INCLUDE_URL_REGEX = '(https?:\/\/(\S+))\/include\.js'
-
     def __init__(self, selenium, timeout=60):
         self.selenium = selenium
         self.timeout = timeout
@@ -24,3 +19,8 @@ class BrowserID(object):
         sign_in = SignIn(self.selenium, timeout=self.timeout)
         if sign_in.is_initial_sign_in:
             sign_in.sign_in(email, password)
+        else:
+            sign_in.sign_in_returning_user()
+            if len(self.selenium.window_handles) == 2:
+                sign_in.click_this_is_not_my_computer()
+                sign_in.switch_to_main_window()
