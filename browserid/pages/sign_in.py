@@ -12,7 +12,7 @@ from base import Base
 from email import email
 
 
-class FirefoxAccounts(Base):
+class SignIn(Base):
 
         _email_input_locator = (By.CSS_SELECTOR, '.input-row .email')
         _next_button_locator = (By.ID, 'email-button')
@@ -34,11 +34,11 @@ class FirefoxAccounts(Base):
             else:
                 raise Exception('Popup has not loaded')
 
-        def login_user(self, user):
-            self.enter_email = email
+        def login_user(self, email, password):
+            self.enter_email(email)
             if self.is_element_present(*self._next_button_locator):
                 self.click_next()
-            self.enter_password = password
+            self.enter_password(password)
             self.click_sign_in()
 
         def enter_password(self, value):
