@@ -8,8 +8,6 @@ import time
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
-from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import WebDriverException
 
 
 class Base(object):
