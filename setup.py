@@ -8,7 +8,7 @@ try:
 except (OSError, IOError):
     description = ''
 
-setup(name='browserid',
+setup(name='fxapom',
       version='1.0',
       description="Mozilla Firefox Accounts Page Object Model",
       long_description=description,
@@ -18,5 +18,5 @@ setup(name='browserid',
       author_email='mozwebqa@mozilla.org',
       url='https://github.com/AndreiH/fxapom',
       license='MPL 2.0',
-      packages=['browserid', 'browserid.pages'],
+      packages=['fxapom', 'fxapom.pages'],
       include_package_data=True)

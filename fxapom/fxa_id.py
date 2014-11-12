@@ -7,7 +7,7 @@
 import selenium
 
 
-class BrowserID(object):
+class FXAID(object):
 
     VERIFY_URL_REGEX = 'https?:\/\/(\S+)\/verify_email_address\?token=(.{48})'
     CONFIRM_URL_REGEX = 'https?:\/\/(\S+)\/confirm\?token=(.{48})'
