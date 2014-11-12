@@ -8,7 +8,7 @@ import time
 import os
 import subprocess
 
-from mocks.user import MockUser
+from user import MockUser
 
 
 class FxaTestUser:
