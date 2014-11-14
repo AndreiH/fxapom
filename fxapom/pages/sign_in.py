@@ -67,6 +67,7 @@ class SignIn(Base):
     def sign_in(self, email, password):
         """Signs in using the specified email address and password."""
         self.email = email
-        self.click_next(expect='password')
+        if self.is_element_present(*self._next_button_locator):
+            self.click_next(expect='password')
         self.login_password = password
         self.click_sign_in()
