@@ -8,6 +8,9 @@ from base import Base
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.select import Select
+
+from fxapom.pages.fxa_test_user import FxaTestUser
 
 
 class SignIn(Base):
@@ -17,6 +20,8 @@ class SignIn(Base):
     _password_input_locator = (By.ID, 'password')
     _sign_in_locator = (By.ID, 'submit-btn')
     _notice_form_locator = (By.CSS_SELECTOR, '#notice-form button')
+    _age_selection_locator = (By.ID, 'fxa-age-year')
+    _email_verification_message_locator = (By.CSS_SELECTOR, '.verification-email-message')
 
     def __init__(self, selenium, timeout, expect=None, default_implicit_wait=10):
         Base.__init__(self, selenium, timeout, default_implicit_wait)
@@ -61,8 +66,18 @@ class SignIn(Base):
         self.selenium.find_element(*self._sign_in_locator).click()
         WebDriverWait(self.selenium, self.timeout).until(
                     lambda s: self._sign_in_window_handle not in self.selenium.window_handles)
-
         self.switch_to_main_window()
+
+    def click_sign_up(self):
+        self.selenium.find_element(*self._sign_in_locator).click()
+        WebDriverWait(self.selenium, self.timeout).until(
+                    lambda s: self.is_element_visible(*self._email_verification_message_locator))
+        self.switch_to_main_window()
+
+    def edit_year_of_birth(self, option_value):
+        element = self.selenium.find_element(*self._age_selection_locator)
+        select = Select(element)
+        select.select_by_value(option_value)
 
     def sign_in(self, email, password):
         """Signs in using the specified email address and password."""
@@ -71,3 +86,12 @@ class SignIn(Base):
             self.click_next(expect='password')
         self.login_password = password
         self.click_sign_in()
+
+    def register(self, mozwebqa, email, password):
+        """Registers using the specified email address and password."""
+        self.email = email
+        self.login_password = password
+        self.edit_year_of_birth('1990')
+        self.click_sign_up()
+        verify_user = FxaTestUser()
+        verify_user.verify_new_user(mozwebqa)
