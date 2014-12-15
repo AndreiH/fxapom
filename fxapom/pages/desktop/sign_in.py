@@ -10,11 +10,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
 
-from fxapom.pages.fxa_test_user import FxaTestUser
-
 
 class SignIn(Base):
 
+    _fox_logo_locator = (By.ID, 'fox-logo')
     _email_input_locator = (By.CSS_SELECTOR, '.input-row .email')
     _next_button_locator = (By.ID, 'email-button')
     _password_input_locator = (By.ID, 'password')
@@ -23,17 +22,21 @@ class SignIn(Base):
     _age_selection_locator = (By.ID, 'fxa-age-year')
     _email_verification_message_locator = (By.CSS_SELECTOR, '.verification-email-message')
 
-    def __init__(self, selenium, timeout, expect=None, default_implicit_wait=10):
-        Base.__init__(self, selenium, timeout, default_implicit_wait)
+    def __init__(self, testsetup):
+        Base.__init__(self, testsetup)
 
-        for handle in self.selenium.window_handles:
-            self.selenium.switch_to.window(handle)
-            if self.is_element_present(*self._email_input_locator):
-                self.wait_for_element_visible(*self._email_input_locator)
-                self._sign_in_window_handle = handle
-                break
+        if len(self.selenium.window_handles) > 1:
+            self.popup = True
+            for handle in self.selenium.window_handles:
+                self.selenium.switch_to.window(handle)
+                if self.is_element_present(*self._fox_logo_locator):
+                    self.wait_for_element_visible(*self._email_input_locator)
+                    self._sign_in_window_handle = handle
+                    break
+            else:
+                raise Exception('Popup has not loaded')
         else:
-            raise Exception('Popup has not loaded')
+            self.popup = False
 
     @property
     def email(self):
@@ -64,9 +67,10 @@ class SignIn(Base):
 
     def click_sign_in(self):
         self.selenium.find_element(*self._sign_in_locator).click()
-        WebDriverWait(self.selenium, self.timeout).until(
-                    lambda s: self._sign_in_window_handle not in self.selenium.window_handles)
-        self.switch_to_main_window()
+        if self.popup:
+            WebDriverWait(self.selenium, self.timeout).until(
+                        lambda s: self._sign_in_window_handle not in self.selenium.window_handles)
+            self.switch_to_main_window()
 
     def click_sign_up(self):
         self.selenium.find_element(*self._sign_in_locator).click()
@@ -89,9 +93,10 @@ class SignIn(Base):
 
     def register(self, mozwebqa, email, password):
         """Registers using the specified email address and password."""
-        self.email = email
-        self.login_password = password
-        self.edit_year_of_birth('1990')
-        self.click_sign_up()
-        verify_user = FxaTestUser()
-        verify_user.verify_new_user(mozwebqa)
+        # Not yet implemented for fxapom
+        # self.email = email
+        # self.login_password = password
+        # self.edit_year_of_birth('1990')
+        # self.click_sign_up()
+        # verify_user = FxaTestUser()
+        # verify_user.verify_new_user(mozwebqa)
