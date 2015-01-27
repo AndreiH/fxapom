@@ -3,7 +3,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-import os
+
+import string
+import random
+from datetime import datetime
 
 from fxa.core import Client
 from fxa.tests.utils import TestEmailAccount
@@ -24,7 +27,7 @@ class WebDriverFxA(object):
 class FxATestAccount:
     """A base test class that can be extended by other tests to include utility methods."""
 
-    password = os.urandom(4).encode('hex')
+    password = ''.join([random.choice(string.letters) for i in xrange(8)])
 
     def __init__(self, mozwebqa=None, use_prod=True):
         if mozwebqa and '-dev.allizom' in mozwebqa.base_url or (
@@ -36,6 +39,7 @@ class FxATestAccount:
     def create_account(self):
         self.account = TestEmailAccount()
         client = Client(self.fxa_url)
+        print 'fxapom created an account for email: %s at %s' % (self.account.email, datetime.now())
         # Create and verify the Firefox account
         self.session = client.create_account(self.account.email, self.password)
         m = self.account.wait_for_email(lambda m: "x-verify-code" in m["headers"])
