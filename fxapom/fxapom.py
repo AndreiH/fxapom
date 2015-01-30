@@ -38,10 +38,12 @@ class FxATestAccount:
 
     def create_account(self):
         self.account = TestEmailAccount()
+        changed_email = map(lambda x: random.choice(string.ascii_lowercase) if x.isdigit() else x, self.account.email)
+        self.new_email = ''.join([i for i in changed_email])
         client = Client(self.fxa_url)
-        print 'fxapom created an account for email: %s at %s' % (self.account.email, datetime.now())
+        print 'fxapom created an account for email: %s at %s' % (self.new_email, datetime.now())
         # Create and verify the Firefox account
-        self.session = client.create_account(self.account.email, self.password)
+        self.session = client.create_account(self.new_email, self.password)
         m = self.account.wait_for_email(lambda m: "x-verify-code" in m["headers"])
         if not m:
             raise RuntimeError("Verification email was not received")
@@ -50,7 +52,7 @@ class FxATestAccount:
 
     @property
     def email(self):
-        return self.account.email
+        return self.new_email
 
     @property
     def is_verified(self):
